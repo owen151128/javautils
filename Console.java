@@ -108,14 +108,14 @@ public class Console {
     standardOutput.printf(format, objects);
   }
 
-  public String getLine(String message) {
-    standardOutput.print(message + INPUT_PREFIX);
+  public synchronized String getLine(String message) {
+    standardOutput.println(message + INPUT_PREFIX);
     return standardInput.nextLine();
   }
 
   public int getInt(String message) {
     try {
-      standardOutput.print(message + INPUT_PREFIX);
+      standardOutput.println(message + INPUT_PREFIX);
 
       return Integer.parseInt(standardInput.nextLine());
     } catch (NumberFormatException e) {
@@ -127,7 +127,7 @@ public class Console {
 
   public float getFloat(String message) {
     try {
-      standardOutput.print(message + INPUT_PREFIX);
+      standardOutput.println(message + INPUT_PREFIX);
 
       return Float.parseFloat(standardInput.nextLine());
     } catch (NumberFormatException e) {
@@ -139,7 +139,7 @@ public class Console {
 
   public double getDouble(String message) {
     try {
-      standardOutput.print(message + INPUT_PREFIX);
+      standardOutput.println(message + INPUT_PREFIX);
 
       return Double.parseDouble(standardInput.nextLine());
     } catch (NumberFormatException e) {
@@ -151,7 +151,7 @@ public class Console {
 
   public char getChar(String message) {
     String line;
-    standardOutput.print(message + INPUT_PREFIX);
+    standardOutput.println(message + INPUT_PREFIX);
     line = standardInput.nextLine();
 
     if (line.length() != 1) {
