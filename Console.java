@@ -1,78 +1,165 @@
-package kr.owens.alarm.util;
 
+import java.io.PrintStream;
+import java.util.Scanner;
+
+/**
+ * @author owen151128@gmail.com
+ * <p>
+ * Created by owen151128 on 2019-11-26 11:34
+ * <p>
+ * Providing features related to Console class
+ */
 public class Console {
 
-    private static boolean isPrintTag = false;
+  private static Console instance = null;
 
-    private static final String TAG = "[OWEN]";
-    private static final String START_TAG = "[OWEN] ";
-    private static final String NEW_LINE = "\n";
-    private static final String LINE_CHAR = "=";
-    private static String LINES = null;
+  private static final String COMMA = ", ";
+  private static final String INPUT_PREFIX = " >> ";
 
-    private static final int LINE_LEN = 40;
+  private static final char NULL = '\0';
 
-    static {
-        StringBuilder sb = new StringBuilder();
-        int totalLen = LINE_LEN + 1;
+  private static final String ILLEGAL_INPUT_ERR_FORMAT = "Please input the %s! String is not support.";
+  private static final String TAG = "[OWEN]";
+  private static final String START_TAG = "[OWEN] ";
+  private static final String NEW_LINE = "\n";
+  private static final String LINE_CHAR = "=";
+  private static final String INTEGER = "Integer";
+  private static final String FLOAT = "Float";
+  private static final String DOUBLE = "Double";
+  private static final String CHAR = "Char";
 
-        if (LINE_LEN % 2 != 0) {
-            totalLen++;
-        }
+  private static final int LINE_LEN = 40;
 
-        for (int i = 0; i < totalLen; i++) {
-            if (i == totalLen / 2) {
-                sb.append(TAG);
-                continue;
-            }
+  private PrintStream standardOutput;
+  private Scanner standardInput;
+  private String LINES;
+  private boolean isPrintTag = false;
 
-            sb.append(LINE_CHAR);
-        }
+  private Console() {
+    standardInput = new Scanner(System.in);
+    standardOutput = System.out;
 
-        LINES = sb.toString().intern();
+    StringBuilder sb = new StringBuilder();
+    int totalLen = LINE_LEN + 1;
+
+    for (int i = 0; i < totalLen; i++) {
+      if (i == totalLen / 2) {
+        sb.append(TAG);
+        continue;
+      }
+
+      sb.append(LINE_CHAR);
     }
 
-    public static void setTagOption(boolean option) {
-        isPrintTag = option;
+    LINES = sb.toString().intern();
+  }
+
+  public static synchronized Console getInstance() {
+    if (instance == null) {
+      instance = new Console();
     }
 
-    public static void startWithLines(String message) {
-        System.out.println(LINES + NEW_LINE + message);
+    return instance;
+  }
+
+  public void setTagOption(boolean isPrintTag) {
+    this.isPrintTag = isPrintTag;
+  }
+
+  public void startWithLine(String message) {
+    standardOutput.println(LINES + NEW_LINE + message);
+  }
+
+  public void startWithLines(String format, Object... objects) {
+    standardOutput.println(LINES + NEW_LINE + String.format(format, objects));
+  }
+
+  public void endWithLines(String message) {
+    standardOutput.println(message + NEW_LINE + LINES);
+  }
+
+  public void endWithLines(String format, Object... objects) {
+    standardOutput.println(String.format(format, objects) + NEW_LINE + LINES);
+  }
+
+  public void print(String message) {
+    standardOutput.println(message);
+  }
+
+  public void print(String message, String sep) {
+    standardOutput.print(message + sep);
+  }
+
+  public void print(String... messages) {
+    for (String s : messages) {
+      standardOutput.print(s + COMMA);
+    }
+    standardOutput.println();
+  }
+
+  public void print(String sep, String... messages) {
+    for (String s : messages) {
+      standardOutput.print(s + sep);
+    }
+    standardOutput.println();
+  }
+
+  public void print(String format, Object... objects) {
+    standardOutput.printf(format, objects);
+  }
+
+  public String getLine(String message) {
+    standardOutput.print(message + INPUT_PREFIX);
+    return standardInput.nextLine();
+  }
+
+  public int getInt(String message) {
+    try {
+      standardOutput.print(message + INPUT_PREFIX);
+
+      return Integer.parseInt(standardInput.nextLine());
+    } catch (NumberFormatException e) {
+      standardOutput.println(String.format(ILLEGAL_INPUT_ERR_FORMAT, INTEGER));
     }
 
-    public static void startWithLines(String format, Object... objects) {
-        System.out.println(LINES + NEW_LINE + String.format(format, objects));
+    return 0;
+  }
+
+  public float getFloat(String message) {
+    try {
+      standardOutput.print(message + INPUT_PREFIX);
+
+      return Float.parseFloat(standardInput.nextLine());
+    } catch (NumberFormatException e) {
+      standardOutput.println(String.format(ILLEGAL_INPUT_ERR_FORMAT, FLOAT));
     }
 
-    public static void endWithLines(String message) {
-        System.out.println(message + NEW_LINE + LINES);
+    return 0;
+  }
+
+  public double getDouble(String message) {
+    try {
+      standardOutput.print(message + INPUT_PREFIX);
+
+      return Double.parseDouble(standardInput.nextLine());
+    } catch (NumberFormatException e) {
+      standardOutput.println(String.format(ILLEGAL_INPUT_ERR_FORMAT, DOUBLE));
     }
 
-    public static void endWithLines(String format, Object... objects) {
-        System.out.println(String.format(format, objects) + NEW_LINE + LINES);
+    return 0;
+  }
+
+  public char getChar(String message) {
+    String line;
+    standardOutput.print(message + INPUT_PREFIX);
+    line = standardInput.nextLine();
+
+    if (line.length() != 1) {
+      standardOutput.println(String.format(ILLEGAL_INPUT_ERR_FORMAT, CHAR));
+
+      return NULL;
     }
 
-    public static void print(String message) {
-        System.out.print(message);
-    }
-
-    public static void print(String format, Object... objects) {
-        System.out.print(String.format(format, objects));
-    }
-
-    public static void println(String message) {
-        if (isPrintTag) {
-            System.out.println(START_TAG + message);
-        } else {
-            System.out.println(message);
-        }
-    }
-
-    public static void println(String format, Object... objects) {
-        if (isPrintTag) {
-            System.out.println(START_TAG + String.format(format, objects));
-        } else {
-            System.out.println(String.format(format, objects));
-        }
-    }
+    return line.charAt(0);
+  }
 }
