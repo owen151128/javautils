@@ -83,14 +83,18 @@ public class Console {
   }
 
   public void print(String message) {
-    standardOutput.println(message);
+    standardOutput.println(isPrintTag ? START_TAG + message : message);
   }
 
   public void print(String message, String sep) {
-    standardOutput.print(message + sep);
+    standardOutput.println(isPrintTag ? START_TAG + message + sep : message + sep);
   }
 
   public void print(String... messages) {
+    if (isPrintTag) {
+      standardOutput.print(START_TAG);
+    }
+
     for (String s : messages) {
       standardOutput.print(s + COMMA);
     }
@@ -98,6 +102,10 @@ public class Console {
   }
 
   public void print(String sep, String... messages) {
+    if (isPrintTag) {
+      standardOutput.print(START_TAG);
+    }
+
     for (String s : messages) {
       standardOutput.print(s + sep);
     }
@@ -105,7 +113,7 @@ public class Console {
   }
 
   public void print(String format, Object... objects) {
-    standardOutput.printf(format, objects);
+    standardOutput.printf(isPrintTag ? START_TAG + format : format, objects);
   }
 
   public synchronized String getLine(String message) {
